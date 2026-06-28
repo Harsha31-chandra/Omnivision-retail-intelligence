@@ -1,0 +1,11 @@
+# Ignore Python cache
+__pycache__/
+
+# Ignore massive datasets and generated data
+dataset/
+images/
+*.npy
+*.csv
+
+# Ignore environment/system files
+.DS_Store

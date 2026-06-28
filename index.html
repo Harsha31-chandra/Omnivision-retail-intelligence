@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ORIE | OmniVision</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --text-color: #f8fafc;
+            --accent-color: #38bdf8;
+            --card-bg: rgba(30, 41, 59, 0.6);
+            --card-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: radial-gradient(circle at top left, #1e293b, var(--bg-color));
+            color: var(--text-color);
+            margin: 0;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #94a3b8;
+            font-size: 1rem;
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            max-width: 600px;
+            margin: 0 auto 50px auto;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        input {
+            flex: 1;
+            padding: 15px 25px;
+            font-size: 16px;
+            border: none;
+            border-radius: 30px;
+            background: transparent;
+            color: white;
+            outline: none;
+        }
+
+        input::placeholder { color: #64748b; }
+
+        button {
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            background: var(--accent-color);
+            color: #0f172a;
+            border: none;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.8);
+            background: #7dd3fc;
+        }
+
+        /* Modern Grid Layout */
+        #results {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Glassmorphism Cards */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 15px;
+            text-align: center;
+            backdrop-filter: blur(12px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--accent-color);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(56, 189, 248, 0.2);
+        }
+
+        .card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            background-color: #1e293b;
+        }
+
+        .card h3 {
+            font-size: 14px;
+            margin: 0 0 10px 0;
+            color: #e2e8f0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .match-score {
+            display: inline-block;
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent-color);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        /* Loading Spinner */
+        .loader {
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top: 4px solid var(--accent-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 40px auto;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>ORIE</h1>
+        <p>OmniVision Retail Intelligence Engine</p>
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="query" placeholder="Describe what you are looking for..." onkeydown="if(event.key === 'Enter') search()">
+        <button onclick="search()">Search</button>
+    </div>
+
+    <div id="results"></div>
+
+    <script>
+        async function search() {
+            const query = document.getElementById('query').value;
+            const resultsDiv = document.getElementById('results');
+            
+            if (!query.trim()) return;
+
+            // Stylish loading state
+            resultsDiv.style.display = "block";
+            resultsDiv.innerHTML = '<div class="loader"></div>';
+
+            try {
+                const res = await fetch('http://127.0.0.1:8000/search', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({query: query})
+                });
+                
+                const data = await res.json();
+                
+                resultsDiv.innerHTML = ''; 
+                resultsDiv.style.display = "grid"; // Switch back to grid
+
+                data.results.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+
+                    const img = document.createElement('img');
+                    img.src = `images/${item.id}.jpg`; 
+                    img.onerror = function() { this.src = 'https://via.placeholder.com/200x250/1e293b/38bdf8?text=Image+Missing'; };
+
+                    const title = document.createElement('h3');
+                    title.textContent = item.metadata.productDisplayName;
+                    title.title = item.metadata.productDisplayName; // Hover for full text
+
+                    const score = document.createElement('div');
+                    score.className = 'match-score';
+                    score.textContent = `${(item.score * 100).toFixed(1)}% Match`;
+
+                    card.appendChild(img);
+                    card.appendChild(title);
+                    card.appendChild(score);
+                    
+                    resultsDiv.appendChild(card);
+                });
+            } catch (error) {
+                resultsDiv.style.display = "block";
+                resultsDiv.innerHTML = `<p style="text-align: center; color: #ef4444;">Connection failed. Is the ORIE backend running?</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
