@@ -2,7 +2,8 @@
 
 > A state-of-the-art, AI-powered visual search engine for e-commerce, built with CLIP and Pinecone.
 
-![ORIE UI Concept](https://via.placeholder.com/1000x500/1e293b/38bdf8?text=Replace+this+URL+with+a+screenshot+of+your+UI)
+![ORIE UI Concept](![Uploading Screenshot 2026-06-28 203036.png…]()
+)
 *Note: Replace the image link above with a screenshot of your actual running application!*
 
 ---
