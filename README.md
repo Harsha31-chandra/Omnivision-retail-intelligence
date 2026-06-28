@@ -4,7 +4,6 @@
 
 ![ORIE UI Concept](![Uploading Screenshot 2026-06-28 203036.png…]()
 )
-*Note: Replace the image link above with a screenshot of your actual running application!*
 
 ---
 
